@@ -164,9 +164,8 @@ app.get("/api/v1/endYear", async (req, res) => {
       if (year == null) year = "N/A";
 
       if (!endYearData[year]) {
-        if(year > 2050) ;
-        else
-        endYearData[year] = 1;
+        if (year > 2050);
+        else endYearData[year] = 1;
       } else {
         endYearData[year] += 1;
       }
@@ -189,12 +188,11 @@ app.get("/api/v1/endYear", async (req, res) => {
   }
 });
 
-
 app.get("/api/v1/topics", async (req, res) => {
   try {
     const data = await Data.find();
     const topicsData = {};
-    
+
     data.map((d) => {
       //get all topics
       let topic = d.topic;
@@ -212,13 +210,12 @@ app.get("/api/v1/topics", async (req, res) => {
       const tempJson = { name: topic, value: topicsData[topic] };
       result.push(tempJson);
     }
-    
+
     return res.json(result);
   } catch (error) {
     return res.status(500).json({ msg: "Internal Server Error" });
   }
 });
-
 
 app.get("/api/v1/sector", async (req, res) => {
   try {
@@ -231,16 +228,25 @@ app.get("/api/v1/sector", async (req, res) => {
 
       //count all sectors
       if (!sectordata[sector]) {
-        sectordata[sector] = 1;
+        if (sector == "" );
+        else sectordata[sector] = 1;
       } else {
         sectordata[sector] += 1;
       }
     });
 
     const result = [];
+    let otherCount = 0;
+
     for (let sector in sectordata) {
-      const tempJson = { name: sector, value: sectordata[sector] };
-      result.push(tempJson);
+      if (sectordata[sector] < 10) otherCount++;
+      else {
+        const tempJson = { name: sector, value: sectordata[sector] };
+        result.push(tempJson);
+      }
+    }
+    if (otherCount > 0) {
+      result.push({ name: "other", value: otherCount });
     }
 
     return res.json(result);
@@ -248,7 +254,6 @@ app.get("/api/v1/sector", async (req, res) => {
     return res.status(500).json({ msg: "Internal Server Error" });
   }
 });
-
 
 app.get("/api/v1/intensity", async (req, res) => {
   try {
@@ -260,13 +265,11 @@ app.get("/api/v1/intensity", async (req, res) => {
       let intensity = d.intensity;
       let year = d.start_year;
 
-      if(year && intensity){
+      if (year && intensity) {
         const tempJson = { x: year, y: intensity };
         result.push(tempJson);
       }
-      
     });
-
 
     return res.json(result);
   } catch (error) {
@@ -274,6 +277,72 @@ app.get("/api/v1/intensity", async (req, res) => {
   }
 });
 
+app.get("/api/v1/country", async (req, res) => {
+  try {
+    const data = await Data.find();
+    const countryData = {};
 
+    data.map((d) => {
+      //get all countrys
+      let country = d.country;
+
+      //count all countrys
+      if (!countryData[country]) {
+        if (country == "");
+        else countryData[country] = 1;
+      } else {
+        countryData[country] += 1;
+      }
+    });
+
+    const result = [];
+    for (let country in countryData) {
+      const tempJson = { name: country, value: countryData[country] };
+      result.push(tempJson);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+});
+
+app.get("/api/v1/region", async (req, res) => {
+  try {
+    const data = await Data.find();
+    const regionData = {};
+
+    data.map((d) => {
+      //get all regions
+      let region = d.region;
+
+      //count all regions
+      if (!regionData[region]) {
+        if (region == "" || region == "world");
+        else regionData[region] = 1;
+      } else {
+        regionData[region] += 1;
+      }
+    });
+
+    const result = [];
+    let otherCount = 0;
+
+    for (let region in regionData) {
+      if (regionData[region] < 10) otherCount++;
+      else {
+        const tempJson = { name: region, value: regionData[region] };
+        result.push(tempJson);
+      }
+    }
+    if (otherCount > 0) {
+      result.push({ name: "other", value: otherCount });
+    }
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+});
 
 app.listen(port);
