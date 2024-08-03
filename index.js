@@ -277,6 +277,28 @@ app.get("/api/v1/intensity", async (req, res) => {
   }
 });
 
+app.get("/api/v1/likelihood", async (req, res) => {
+  try {
+    const data = await Data.find();
+    const result = [];
+
+    data.map((d) => {
+      //get all topics
+      let likelihood = d.likelihood;
+      let year = d.start_year;
+
+      if (year && likelihood) {
+        const tempJson = { x: year, y: likelihood };
+        result.push(tempJson);
+      }
+    });
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+});
+
 app.get("/api/v1/country", async (req, res) => {
   try {
     const data = await Data.find();
