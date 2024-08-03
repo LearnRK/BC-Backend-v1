@@ -220,4 +220,60 @@ app.get("/api/v1/topics", async (req, res) => {
 });
 
 
+app.get("/api/v1/sector", async (req, res) => {
+  try {
+    const data = await Data.find();
+    const sectordata = {};
+
+    data.map((d) => {
+      //get all sectors
+      let sector = d.sector;
+
+      //count all sectors
+      if (!sectordata[sector]) {
+        sectordata[sector] = 1;
+      } else {
+        sectordata[sector] += 1;
+      }
+    });
+
+    const result = [];
+    for (let sector in sectordata) {
+      const tempJson = { name: sector, value: sectordata[sector] };
+      result.push(tempJson);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+});
+
+
+app.get("/api/v1/intensity", async (req, res) => {
+  try {
+    const data = await Data.find();
+    const result = [];
+
+    data.map((d) => {
+      //get all topics
+      let intensity = d.intensity;
+      let year = d.start_year;
+
+      if(year && intensity){
+        const tempJson = { x: year, y: intensity };
+        result.push(tempJson);
+      }
+      
+    });
+
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+});
+
+
+
 app.listen(port);
