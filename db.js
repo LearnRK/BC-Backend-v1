@@ -2,13 +2,20 @@ const mongoose = require("mongoose");
 const { DATABASE_URL } = require("./config");
 
 mongoose
-.connect(DATABASE_URL)
-.then(() => {
-  console.log("Connected to MongoDB");
-})
-.catch((e) => {
-  console.log("connection failed");
+  .connect(DATABASE_URL)
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((e) => {
+    console.log("connection failed");
+  });
+
+const messageSchema = new mongoose.Schema({
+  email: String,
+  subject: String,
+  message: String,
 });
+const Message = mongoose.model("Message", messageSchema);
 
 const dataSchema = new mongoose.Schema({
   end_year: Number,
@@ -29,13 +36,6 @@ const dataSchema = new mongoose.Schema({
   title: String,
   likelihood: Number,
 });
-
 const Data = mongoose.model("Data", dataSchema);
 
-const chartSchema = mongoose.Schema({
-  name:{},
-  children:{
-    type: mongoose.model.
-  }
-})
-const ChartModel = mongoose.model("ChartModel", chartSchema);
+module.exports = { Data, Message };
